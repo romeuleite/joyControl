@@ -1,20 +1,168 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { AntDesign, Feather } from '@expo/vector-icons';
+import { useState } from 'react';
+//import Joystick from './components/Joystick';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+const TOPIC = '/robot/cmd_vel';
+
+export default class App extends React.Component {
+
+    constructor() {
+        super();
+
+        this.state = {
+            connected: false,
+            activated: false,
+            ip_address: "IP ADDRESS"
+        };
+
+        this.socket = null;
+
+        this.emit = this.emit.bind(this);
+        this.handleConnectButton = this.handleConnectButton.bind(this);
+    }
+
+
+    emit = (vel, ang) => {
+        this.socket.send(JSON.stringify({
+            op: 'publish',
+            topic: TOPIC,
+            msg: {
+                linear: { x: vel, y: 0, z: 0 },
+                angular: { x: 0, y: 0, z: ang }
+            }
+        }));
+    };
+
+
+    handleConnectButton = () => {
+        try {
+            if (this.state.connected) {
+                this.emit(0, 0);
+                this.socket.close();
+            }
+            else {
+                if (!this.socket || this.socket.readyState == WebSocket.CLOSED) {
+                    this.socket = new WebSocket(`ws://${this.state.ip_address}:8080`);
+                    this.socket.onopen = () => {
+                        if (!this.state.connected) {
+                            this.setState({
+                                connected: true
+                            });
+                            Alert.alert('Connected!');
+                        }
+                    };
+                    this.socket.onclose = () => {
+                        if (this.state.connected) {
+                            this.setState({
+                                connected: false
+                            });
+                            Alert.alert('Disconnected!');
+                        }
+                    };
+                }
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+
+    render() {
+        return (
+            <View style={styles.container}>
+                <View style={{ width: '35%' }} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} gap={10} paddingLeft={'15%'}>
+                    <View flexDirection={'row'} gap={10}>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 1)}><Feather name="arrow-up-left" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(1, 0)}><Feather name="arrow-up" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, -1)}><Feather name="arrow-up-right" size={48} color="#fff" /></TouchableOpacity>
+                    </View>
+                    <View flexDirection={'row'} gap={10}>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-left" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="circle" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-right" size={48} color="#fff" /></TouchableOpacity>
+                    </View>
+                    <View flexDirection={'row'} gap={10}>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-down-left" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-down" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-down-right" size={48} color="#fff" /></TouchableOpacity>
+                    </View>
+                </View>
+                <View style={{ width: '50%', flexDirection: 'column-reverse', paddingLeft: '25%' }}>
+                    <View style={{ height: '50%' }}>
+                        <View style={{ paddingBottom: 40, width: "80%" }}
+                        >
+                            <TextInput
+                                multiline={false}
+                                onChangeText={(ip_address) => this.setState({ ip_address })}
+                                value={this.state.ip_address}
+                                style={{
+                                    fontSize: 30,
+                                    borderBottomColor: '#000000',
+                                    borderBottomWidth: 1
+                                }}
+                            />
+                        </View>
+                        <TouchableOpacity
+                            onPress={this.handleConnectButton}
+                            style={styles.connectButton}
+                        >
+                            <Text style={styles.buttonText}>{this.state.connected ? 'Disconnect' : 'Connect'}</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        flexDirection: 'row',
+    },
+    buttonBox: {
+        width: 75,
+        height: 75,
+        backgroundColor: '#195AA5',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 10,
+    },
+    trackStyle: {
+        borderRadius: 10,
+    },
+    leftSlider: {
+        transform: [{ rotate: '-90deg' }],
+        width: 250,
+    },
+    rightSlider: {
+        width: 280,
+        height: 50,
+        transform: [{ rotate: '180deg' }],
+    },
+    leftSliderLabel: {
+        fontSize: 20,
+        left: 50,
+        top: 30,
+    },
+    rightSliderLabel: {
+        fontSize: 20,
+        left: 120,
+    },
+    connectButton: {
+        borderRadius: 60,
+        width: 170,
+        padding: 30,
+        backgroundColor: '#195AA5',
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 20,
+        textAlign: 'center',
+    },
 });
