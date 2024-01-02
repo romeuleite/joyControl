@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Alert, TextInput } from 'react-native';
-import { AntDesign, Feather } from '@expo/vector-icons';
-import { useState } from 'react';
-//import Joystick from './components/Joystick';
+import { Feather } from '@expo/vector-icons';
 
 const TOPIC = '/robot/cmd_vel';
 
@@ -14,7 +12,7 @@ export default class App extends React.Component {
         this.state = {
             connected: false,
             activated: false,
-            ip_address: "IP ADDRESS"
+            ip_address: ""
         };
 
         this.socket = null;
@@ -91,13 +89,13 @@ export default class App extends React.Component {
                     </View>
                 </View>
                 <View style={{ width: '50%', flexDirection: 'column-reverse', paddingLeft: '25%' }}>
-                    <View style={{ height: '50%' }}>
-                        <View style={{ paddingBottom: 40, width: "80%" }}
+                    <View style={{ height: '50%' }} alignItems={'center'}>
+                        <View style={{ paddingBottom: 40, width: "100%" }}
                         >
                             <TextInput
                                 multiline={false}
                                 onChangeText={(ip_address) => this.setState({ ip_address })}
-                                value={this.state.ip_address}
+                                placeholder='IP ADDRESS'
                                 style={{
                                     fontSize: 30,
                                     borderBottomColor: '#000000',
@@ -106,7 +104,7 @@ export default class App extends React.Component {
                             />
                         </View>
                         <TouchableOpacity
-                            onPress={this.handleConnectButton}
+                            onPress={this.state.ip_address !== '' ? this.handleConnectButton:() => Alert.alert('Please insert IP ADDRESS!')}
                             style={styles.connectButton}
                         >
                             <Text style={styles.buttonText}>{this.state.connected ? 'Disconnect' : 'Connect'}</Text>
@@ -132,27 +130,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 10,
-    },
-    trackStyle: {
-        borderRadius: 10,
-    },
-    leftSlider: {
-        transform: [{ rotate: '-90deg' }],
-        width: 250,
-    },
-    rightSlider: {
-        width: 280,
-        height: 50,
-        transform: [{ rotate: '180deg' }],
-    },
-    leftSliderLabel: {
-        fontSize: 20,
-        left: 50,
-        top: 30,
-    },
-    rightSliderLabel: {
-        fontSize: 20,
-        left: 120,
     },
     connectButton: {
         borderRadius: 60,
