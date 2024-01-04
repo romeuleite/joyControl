@@ -4,6 +4,7 @@ import { Feather } from '@expo/vector-icons';
 
 const TOPIC = '/robot/cmd_vel';
 
+
 export default class App extends React.Component {
 
     constructor() {
@@ -21,16 +22,17 @@ export default class App extends React.Component {
         this.handleConnectButton = this.handleConnectButton.bind(this);
     }
 
-
     emit = (vel, ang) => {
-        this.socket.send(JSON.stringify({
-            op: 'publish',
-            topic: TOPIC,
-            msg: {
-                linear: { x: vel, y: 0, z: 0 },
-                angular: { x: 0, y: 0, z: ang }
-            }
-        }));
+        if (this.state.connected) {
+            this.socket.send(JSON.stringify({
+                op: 'publish',
+                topic: TOPIC,
+                msg: {
+                    linear: { x: vel, y: 0, z: 0 },
+                    angular: { x: 0, y: 0, z: ang }
+                }
+            }));
+        }
     };
 
 
@@ -73,9 +75,9 @@ export default class App extends React.Component {
             <View style={styles.container}>
                 <View style={{ width: '35%' }} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} gap={10} paddingLeft={'15%'}>
                     <View flexDirection={'row'} gap={10}>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 1)}><Feather name="arrow-up-left" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 1)}><Feather name="arrow-up-left" size={40} color="#fff" /></TouchableOpacity>
                         <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(1, 0)}><Feather name="arrow-up" size={48} color="#fff" /></TouchableOpacity>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, -1)}><Feather name="arrow-up-right" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, -1)}><Feather name="arrow-up-right" size={40} color="#fff" /></TouchableOpacity>
                     </View>
                     <View flexDirection={'row'} gap={10}>
                         <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-left" size={48} color="#fff" /></TouchableOpacity>
@@ -83,9 +85,9 @@ export default class App extends React.Component {
                         <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-right" size={48} color="#fff" /></TouchableOpacity>
                     </View>
                     <View flexDirection={'row'} gap={10}>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-down-left" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-down-left" size={40} color="#fff" /></TouchableOpacity>
                         <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-down" size={48} color="#fff" /></TouchableOpacity>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-down-right" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-down-right" size={40} color="#fff" /></TouchableOpacity>
                     </View>
                 </View>
                 <View style={{ width: '50%', flexDirection: 'column-reverse', paddingLeft: '25%' }}>
@@ -104,7 +106,7 @@ export default class App extends React.Component {
                             />
                         </View>
                         <TouchableOpacity
-                            onPress={this.state.ip_address !== '' ? this.handleConnectButton:() => Alert.alert('Please insert IP ADDRESS!')}
+                            onPress={this.state.ip_address !== '' ? this.handleConnectButton : () => Alert.alert('Please insert IP ADDRESS!')}
                             style={styles.connectButton}
                         >
                             <Text style={styles.buttonText}>{this.state.connected ? 'Disconnect' : 'Connect'}</Text>
@@ -138,8 +140,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#195AA5',
     },
     buttonText: {
-        color: 'white',
+        color: '#fff',
         fontSize: 20,
         textAlign: 'center',
+        fontWeight: 'bold'
     },
 });
