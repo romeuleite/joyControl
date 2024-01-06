@@ -13,7 +13,9 @@ export default class App extends React.Component {
         this.state = {
             connected: false,
             activated: false,
-            ip_address: ""
+            ip_address: "",
+            linear_vel: 0.1,
+            angular_vel: 0.1,
         };
 
         this.socket = null;
@@ -73,7 +75,7 @@ export default class App extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <View style={{ width: '35%' }} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} gap={10} paddingLeft={'15%'}>
+                <View style={{ width: '35%' }} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} gap={10} paddingLeft={'10%'}>
                     <View flexDirection={'row'} gap={10}>
                         <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 1)}><Feather name="arrow-up-left" size={40} color="#fff" /></TouchableOpacity>
                         <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(1, 0)}><Feather name="arrow-up" size={48} color="#fff" /></TouchableOpacity>
@@ -90,9 +92,9 @@ export default class App extends React.Component {
                         <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-down-right" size={40} color="#fff" /></TouchableOpacity>
                     </View>
                 </View>
-                <View style={{ width: '50%', flexDirection: 'column-reverse', paddingLeft: '25%' }}>
+                <View style={{ width: '30%', flexDirection: 'column-reverse', paddingLeft: '5%' }}>
                     <View style={{ height: '50%' }} alignItems={'center'}>
-                        <View style={{ paddingBottom: 40, width: "100%" }}
+                        <View style={{ paddingBottom: 40, width: "80%" }}
                         >
                             <TextInput
                                 multiline={false}
@@ -111,6 +113,19 @@ export default class App extends React.Component {
                         >
                             <Text style={styles.buttonText}>{this.state.connected ? 'Disconnect' : 'Connect'}</Text>
                         </TouchableOpacity>
+                    </View>
+                </View>
+                <View style={{ width: '30%'}}>
+                    <Text style={styles.velText}>Linear Vel:  {(this.state.linear_vel).toFixed(1)}</Text>
+                    <View flexDirection={'row'} gap={5} justifyContent={'center'}>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.setState({ linear_vel: (this.state.linear_vel + 0.1) })}><Feather name="arrow-up" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.setState({ linear_vel: (this.state.linear_vel - 0.1) })}><Feather name="arrow-down" size={48} color="#fff" /></TouchableOpacity>
+                    </View>
+
+                    <Text style={styles.velText}>Angular Vel:  {(this.state.angular_vel).toFixed(1)}</Text>
+                    <View flexDirection={'row'} gap={5} justifyContent={'center'}>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.setState({ angular_vel: (this.state.angular_vel + 0.1) })}><Feather name="arrow-up" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.setState({ angular_vel: (this.state.angular_vel - 0.1) })}><Feather name="arrow-down" size={48} color="#fff" /></TouchableOpacity>
                     </View>
                 </View>
             </View>
@@ -141,6 +156,11 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: '#fff',
+        fontSize: 20,
+        textAlign: 'center',
+        fontWeight: 'bold'
+    },
+    velText: {
         fontSize: 20,
         textAlign: 'center',
         fontWeight: 'bold'
