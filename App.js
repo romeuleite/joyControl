@@ -4,6 +4,8 @@ import { Feather } from '@expo/vector-icons';
 
 const TOPIC = '/robot/cmd_vel';
 
+const MAX_LINEAR_VEL = 0.1;
+const MAX_ANGULAR_VEL = 0.5;
 
 export default class App extends React.Component {
 
@@ -77,19 +79,19 @@ export default class App extends React.Component {
             <View style={styles.container}>
                 <View style={{ width: '35%' }} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} gap={10} paddingLeft={'10%'}>
                     <View flexDirection={'row'} gap={10}>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 1)}><Feather name="arrow-up-left" size={40} color="#fff" /></TouchableOpacity>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(1, 0)}><Feather name="arrow-up" size={48} color="#fff" /></TouchableOpacity>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, -1)}><Feather name="arrow-up-right" size={40} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(this.state.linear_vel, this.state.angular_vel)}><Feather name="arrow-up-left" size={40} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(this.state.linear_vel, 0)}><Feather name="arrow-up" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(this.state.linear_vel, -this.state.angular_vel)}><Feather name="arrow-up-right" size={40} color="#fff" /></TouchableOpacity>
                     </View>
                     <View flexDirection={'row'} gap={10}>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-left" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, this.state.angular_vel)}><Feather name="arrow-left" size={48} color="#fff" /></TouchableOpacity>
                         <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="circle" size={48} color="#fff" /></TouchableOpacity>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-right" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, -this.state.angular_vel)}><Feather name="arrow-right" size={48} color="#fff" /></TouchableOpacity>
                     </View>
                     <View flexDirection={'row'} gap={10}>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-down-left" size={40} color="#fff" /></TouchableOpacity>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-down" size={48} color="#fff" /></TouchableOpacity>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(0, 0)}><Feather name="arrow-down-right" size={40} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(-this.state.linear_vel, -this.state.angular_vel)}><Feather name="arrow-down-left" size={40} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(-this.state.linear_vel, 0)}><Feather name="arrow-down" size={48} color="#fff" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => this.emit(-this.state.linear_vel, this.state.angular_vel)}><Feather name="arrow-down-right" size={40} color="#fff" /></TouchableOpacity>
                     </View>
                 </View>
                 <View style={{ width: '30%', flexDirection: 'column-reverse', paddingLeft: '5%' }}>
