@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Alert, TextInput } from 'reac
 import { Feather } from '@expo/vector-icons';
 
 const TOPIC = '/robot/cmd_vel';
+const WAY_POINT_TOPIC = '/set_waypoint';
 
 const MAX_LINEAR_VEL = 0.1;
 const MAX_ANGULAR_VEL = 0.5;
@@ -34,6 +35,18 @@ export default class App extends React.Component {
                 msg: {
                     linear: { x: vel, y: 0, z: 0 },
                     angular: { x: 0, y: 0, z: ang }
+                }
+            }));
+        }
+    };
+
+    pub_waypoint = (waypoint) => {
+        if (this.state.connected) {
+            this.socket.send(JSON.stringify({
+                op: 'publish',
+                topic: WAY_POINT_TOPIC,
+                msg: {
+                    data: {waypoint}
                 }
             }));
         }
@@ -95,8 +108,8 @@ export default class App extends React.Component {
                     </View>
                 </View>
                 <View style={{ width: '30%', flexDirection: 'column-reverse', paddingLeft: '5%' }}>
-                    <View style={{ height: '50%' }} alignItems={'center'}>
-                        <View style={{ paddingBottom: 40, width: "80%" }}
+                    <View style={{ height: '70%' }} alignItems={'center'}>
+                        <View style={{ paddingBottom: 20, width: "80%" }}
                         >
                             <TextInput
                                 multiline={false}
@@ -114,6 +127,9 @@ export default class App extends React.Component {
                             style={styles.connectButton}
                         >
                             <Text style={styles.buttonText}>{this.state.connected ? 'Disconnect' : 'Connect'}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.waypointButton} onPress={() => this.pub_waypoint("LE-1")}>
+                                <Text style={styles.buttonText}>Waypoint</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -152,7 +168,14 @@ const styles = StyleSheet.create({
     },
     connectButton: {
         borderRadius: 60,
-        width: 170,
+        width: 150,
+        padding: 30,
+        backgroundColor: '#195AA5',
+        marginBottom: 10
+    },
+    waypointButton: {
+        borderRadius: 60,
+        width: 150,
         padding: 30,
         backgroundColor: '#195AA5',
     },
