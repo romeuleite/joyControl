@@ -4,6 +4,7 @@ import { Feather } from '@expo/vector-icons';
 
 const TOPIC = '/robot/cmd_vel';
 const WAY_POINT_TOPIC = '/set_waypoint';
+const ODOM = '/odom'; 
 
 const MAX_LINEAR_VEL = 0.1;
 const MAX_ANGULAR_VEL = 0.5;
@@ -21,6 +22,7 @@ export default class App extends React.Component {
             angular_vel: 0.1,
         };
 
+        this.odom = "nao salvou nada";
         this.socket = null;
 
         this.emit = this.emit.bind(this);
@@ -40,17 +42,28 @@ export default class App extends React.Component {
         }
     };
 
+    sub_odom = () => {
+        if (this.state.connected) {
+            this.socket.send(JSON.stringify({
+                op: 'subscribe',
+                topic: ODOM,
+            }));
+        }
+    };
+    
+
     pub_waypoint = (waypoint) => {
         if (this.state.connected) {
             this.socket.send(JSON.stringify({
                 op: 'publish',
                 topic: WAY_POINT_TOPIC,
                 msg: {
-                    data: {waypoint}
+                    data: waypoint
                 }
             }));
         }
     };
+    
 
 
     handleConnectButton = () => {
@@ -86,6 +99,32 @@ export default class App extends React.Component {
         }
     };
 
+    handleSaveWaypointButton = () => {
+        // Se inscreve no tópico '/odom'
+        this.sub_odom();
+        console.log("OIII");
+        // Define o manipulador de mensagens para pegar a posição do robô
+        this.socket.onmessage = (event) => {
+            let msg = JSON.parse(event.data);
+            if (msg.topic ===  ODOM) {
+                // Salva a posição do robôd
+                let robotPosition = msg.msg;
+                this.setState({odom:robotPosition});
+                console.log("Posição do robô: x = " + robotPosition.pose.pose.position.x + ", y = " + robotPosition.pose.pose.position.y + ", z = " + robotPosition.pose.pose.position.z);
+
+
+                // Faz algo com a posição do robô (por exemplo, salva em um estado ou banco de dados)
+                
+                // Cancela a inscrição do tópico '/odom' após receber a posição do robô
+                this.socket.send(JSON.stringify({
+                    op: 'unsubscribe',
+                    topic: ODOM
+                }));
+            }
+        };
+    };
+    
+
 
     render() {
         return (
@@ -115,6 +154,7 @@ export default class App extends React.Component {
                                 multiline={false}
                                 onChangeText={(ip_address) => this.setState({ ip_address })}
                                 placeholder='IP ADDRESS'
+                                defaultValue='172.20.10.2'
                                 style={{
                                     fontSize: 30,
                                     borderBottomColor: '#000000',
@@ -130,6 +170,9 @@ export default class App extends React.Component {
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.waypointButton} onPress={() => this.pub_waypoint("LE-1")}>
                                 <Text style={styles.buttonText}>Waypoint</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.waypointButton} onPress={() => this.handleSaveWaypointButton()}>
+                                <Text style={styles.buttonText}>{this.odom}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
