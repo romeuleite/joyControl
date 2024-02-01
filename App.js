@@ -192,6 +192,12 @@ class App extends React.Component {
                             <Text style={styles.buttonText}>Waypoint</Text>
                         </TouchableOpacity>
 
+                                 {/*
+                       <TouchableOpacity style={styles.waypointButton} onPress={() => this.pub_waypoint("LE-1")}>
+                                <Text style={styles.buttonText}>Waypoint</Text>
+                        </TouchableOpacity>
+                                */}   
+
                         <TouchableOpacity style={styles.waypointButton} onPress={() => this.handleSaveWaypointButton()}>
                                 <Text style={styles.buttonText}>{this.odom}</Text>
                         </TouchableOpacity>
