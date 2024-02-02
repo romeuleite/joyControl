@@ -133,7 +133,23 @@ class App extends React.Component {
 
 
                 // Faz algo com a posição do robô (por exemplo, salva em um estado ou banco de dados)
+                const data = {
+                    name: 'testando', // Substitua com o nome real do robô
+                    x: robotPosition.pose.pose.position.x,
+                    y: robotPosition.pose.pose.position.y,
+                    z: robotPosition.pose.pose.position.z
+                  };
                 
+                  fetch('/save-coordinates', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                  })
+                  .then(response => response.text())
+                  .then(result => console.log(result))
+                  .catch(error => console.error('Erro ao salvar coordenadas:', error));
                 // Cancela a inscrição do tópico '/odom' após receber a posição do robô
                 this.socket.send(JSON.stringify({
                     op: 'unsubscribe',
