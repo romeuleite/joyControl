@@ -1,6 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import Waypoint from './src/screens/waypointscreen';
 
 const TOPIC = '/robot/cmd_vel';
 const WAY_POINT_TOPIC = '/set_waypoint';
@@ -9,7 +12,22 @@ const ODOM = '/odom';
 const MAX_LINEAR_VEL = 0.1;
 const MAX_ANGULAR_VEL = 0.5;
 
-export default class App extends React.Component {
+const Stack = createStackNavigator();
+
+function AppNavigator() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={App} />
+        <Stack.Screen name="Waypoint" component={Waypoint} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default AppNavigator;
+
+class App extends React.Component {
 
     constructor() {
         super();
@@ -168,7 +186,7 @@ export default class App extends React.Component {
                         >
                             <Text style={styles.buttonText}>{this.state.connected ? 'Disconnect' : 'Connect'}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.waypointButton} onPress={() => this.pub_waypoint("LE-1")}>
+                        <TouchableOpacity style={styles.waypointButton} onPress={() => this.props.navigation.navigate('Waypoint')}>
                                 <Text style={styles.buttonText}>Waypoint</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.waypointButton} onPress={() => this.handleSaveWaypointButton()}>
